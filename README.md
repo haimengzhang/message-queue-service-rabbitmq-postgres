@@ -142,13 +142,13 @@ Next, extract the message-consumer URL the same way as above and verify that the
 GET <message-consumer-URL>/message
 ```
 
-Underneath of pushing and polling messages to save to database:
-1. User post a message to endpoint on the publisher pod.
+Flow of pushing and polling messages:
+1. User send a message request to endpoint hosted on the publisher pod.
 2. Kubernetes cluster schedules the available nodes to run the pods. Traffic is distributed among the same pods.
-2. Message publisher pods will push the messages to a queue hosted by the rabbitmq pods.
-4. Message consumer pods will listen and poll from the queue, and save the data to the database running on postgres pod.
+2. Publisher pod pushes the messages to a queue hosted on the rabbitmq pod.
+4. Consumer pod listens and polls from the queue, and saves the data to the database running on Postgres pod.
 
-### Productionize it
+## Productionize it
 
 Now that we have our service, I want to scale up the deployment so that it handles more load, e.g. 100k RPS.
 To better scale the services and pods, I have decoupled the application to four different components so that they can be scaled independently.
