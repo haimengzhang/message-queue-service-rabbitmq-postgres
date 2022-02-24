@@ -167,7 +167,7 @@ In case of large incoming traffic to queue the messages, we can scale the number
 kubectl scale --replicas=20 deployment/message-publisher
 kubectl scale --replicas=20 deployment/rabbitmq
 ```
-
+### Horizontal pod autoscaler
 Another way is to use horizontal pod autoscaling, we can run:
 ```
 kubectl autoscale deployment/message-publisher --min=10 --max=20 --cpu-percent=80
@@ -180,6 +180,6 @@ Run the command to apply the autoscaling object:
 ```
 kubectl create -f hpa.yaml
 ```
-
+### Cluster autoscaler
 In addition, if we have the kubernetes cluster autoscaler set up such as in GCE, the autoscaler will resize the cluster by adding more nodes to the cluster if there are pending pods which could schedule on a new node.
 
