@@ -152,7 +152,7 @@ Flow of pushing and polling messages:
 
 ## Productionize it
 
-Now that we have our service, I want to scale up the deployment so that it handles more load, e.g. 100k RPS.
+Now that we have our service, we want to scale up the deployment so that it handles more load, e.g. 100k RPS.
 To better scale the services and pods, I have decoupled the application to four different components so that they can be scaled independently.
 For example, we could have hundreds of message publishers running and a single instance of the message producer.
 
@@ -168,9 +168,18 @@ kubectl scale --replicas=20 deployment/message-publisher
 kubectl scale --replicas=20 deployment/rabbitmq
 ```
 
-Since we have horizontal pod autoscaling set up, we can also run:
+Another way is to use horizontal pod autoscaling, we can run:
 ```
 kubectl autoscale deployment/message-publisher --min=10 --max=20 --cpu-percent=80
 ```
-If we have the kubernetes autoscaler set up, the autoscaler will add more nodes to the cluster if there are pending pods which could schedule on a new node.
+Kubernetes auto scaler works by monitoring metrics. As it sees more messages request coming to queue up, it will add more pods to run more application instances.
+To use the metrics, we will have to install a metrics API, e.g. Custom Metrics API. We also need Prometheus to collect and store the metrics data as time series data.
+
+With this setup, we could write a yaml file to create an horizontal pod autoscaling object in Kubernetes. In the yaml, we tell Kubernetes to use the metrics to scale up the pods. For example, we can scale up if there are more than 50 messages in the queue. We also tell Kubernetes the min and max pods to run as a limit. 
+Run the command to apply the autoscaling object:
+```
+kubectl create -f hpa.yaml
+```
+
+In addition, if we have the kubernetes cluster autoscaler set up such as in GCE, the autoscaler will resize the cluster by adding more nodes to the cluster if there are pending pods which could schedule on a new node.
 
