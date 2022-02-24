@@ -21,6 +21,60 @@ Then, connect to the Docker client to minikube:
 ```
   minikube docker-env
 ```
+We want to pull docker images from docker hub to local machine with docker running in the background:
+```
+docker pull rabbitmq:3-management
+docker pull postgres
+```
+
+Next, build the local service images and push them to docker hub so that later we can use them on kubernetes.
+In the service directory spring-boot-message-consumer, run:
+
+```
+  mvn install -Dskiptests
+  docker build -t message-consumer .
+  docker tag message-consumer:latest miniocean/message-consumer
+  docker push miniocean/message-consumer
+```
+
+In the service directory spring-boot-message-producer, run:
+
+```
+    mvn install -DskipTests
+    docker build -t message-producer .
+    docker rmi miniocean/message-producer
+    docker tag message-producer:latest miniocean/message-producer
+    docker push miniocean/message-producer
+```
+
+Use docker-compose to run the multiple containers at once in detach mode:
+
+```
+docker-compose up -d
+```
+To stop and remove the containers:
+```
+docker-comose down
+```
+
+## Moving the project to Kubernetes
+Use kompose to translate the docker-compose.yaml to kubernetes deployment and service yaml files. Deployment yamls define how to create the pods to host the container instance. Servce yaml files will be used to expose the deployed object with an external IP, which is used by kubernetes to load balance across the pods. 
+First, We should configure the database pod to use a persistent volume for storage in the cluster.
+PV is backed by physical storage and will retain the data across pods even after the pods are restarted.
+
+### Create the persistent volume and persistent volume claim that bounds to the volume.
+```
+  kubectl apply -f persistent-volume.yml
+  kubectl apply -f persistent-volume-claim-1.yaml
+```
+
+### Deploy POSTGRES service and deployment object:
+```
+kubectl apply -f postgresql-deployment.yaml
+kubectl apply -f postgresql-service.yaml
+kubectl apply -f persistent-volume.yml
+kubectl apply -f persistent-volume-claim-1.yaml
+```
 
 ### Deploy the message-consumer service and deployment object:
 ```   
@@ -34,13 +88,7 @@ Then, connect to the Docker client to minikube:
   kubectl apply -f kube/message-publisher-deployment.yaml
   kubectl apply -f kube/message-publisher-service.yaml
 ```
-### Deploy POSTGRES service and deployment object:
-```
-kubectl apply -f postgresql-deployment.yaml
-kubectl apply -f postgresql-service.yaml
-kubectl apply -f persistent-volume.yml
-kubectl apply -f persistent-volume-claim-1.yaml
-```
+
 
 ### Deploy Rabbitmq service and deployment object:
 ``` 
