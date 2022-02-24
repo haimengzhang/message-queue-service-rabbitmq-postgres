@@ -4,7 +4,7 @@
 ### Setup
 
 Install kubernetes, minikube and docker on your machine. Also, install Postman to test the endpoints.
-There are two local images built and pushed to docker hub so that we can use in kubernetes.
+We will build two local service images and push them to docker hub for later use in kubernetes.
 
 Start the kubernetes cluster with 8GB of RAM:
 ``` 
