@@ -27,7 +27,7 @@ docker pull rabbitmq:3-management
 docker pull postgres
 ```
 
-Next, build the local service images and push them to docker hub so that later we can use them on kubernetes.
+Next, build the local service images and push them to docker hub.
 In the service directory spring-boot-message-consumer, run:
 
 ```
@@ -42,16 +42,18 @@ In the service directory spring-boot-message-producer, run:
 ```
     mvn install -DskipTests
     docker build -t message-producer .
-    docker rmi miniocean/message-producer
     docker tag message-producer:latest miniocean/message-producer
     docker push miniocean/message-producer
 ```
-
-Use docker-compose to run the multiple containers at once in detach mode:
+## Run the service cointainers in docker:
+Now that we have our images ready, use docker-compose to launch the multiple containers at once in detach mode:
 
 ```
 docker-compose up -d
 ```
+Now, our services are running in containers.
+We could test our endpoint by going to `localhost:8090/message/publish` to publish message and `localhost:8091/message/` to fetch the images saved to db.
+
 To stop and remove the containers:
 ```
 docker-comose down
