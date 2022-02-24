@@ -1,0 +1,27 @@
+{
+  "$schema":"https://json-schema.org/draft-07/schema#",
+  "title": "Message",
+  "description": "A message info description",
+  "type": "object",
+  "properties": {
+    "ts": {
+      "type": "string"
+    },
+    "sender":  {
+      "type": "string"
+    },
+    "messageAttributes": {
+      "type": "object",
+      "additionalProperties": {
+      }
+    },
+    "sent_from_ip": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["ts", "sender", "messageAttributes"]
+}
