@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yaml
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: message-publisher
+  name: message-publisher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: message-publisher
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yaml
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/resolute: "true"
+        io.kompose.service: message-publisher
+    spec:
+      containers:
+        - env:
+            - name: SPRING_DATASOURCE_USERNAME
+              value: postgres
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: postgres
+            - name: DB_HOST
+              value: postgres
+            - name: DB_NAME
+              value: postgres
+#            - name: SPRING_DATASOURCE_URL
+#              value: jdbc:postgresql://postgres:5432/postgres
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: update
+            - name: spring_rabbitmq_host
+              value: rabbitmq
+            - name: spring_rabbitmq_password
+              value: guest
+            - name: spring_rabbitmq_port
+              value: "5672"
+            - name: spring_rabbitmq_username
+              value: guest
+          image: miniocean/message-producer
+          name: message-publisher
+          ports:
+            - containerPort: 8090
+          resources: {}
+      restartPolicy: Always
+status: {}

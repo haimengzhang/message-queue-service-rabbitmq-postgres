@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yaml
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: message-publisher
+  name: message-publisher
+spec:
+  type: LoadBalancer
+  ports:
+    - name: "8090"
+      port: 8090
+      targetPort: 8090
+  selector:
+    io.kompose.service: message-publisher
+status:
+  loadBalancer: {}

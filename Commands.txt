@@ -1,0 +1,93 @@
+----------build and deploy message consumer image --------
+  mvn install -Dskiptests
+  docker build -t message-consumer .
+  docker rmi miniocean/message-consumer
+  docker tag message-consumer:latest miniocean/message-consumer
+  docker push miniocean/message-consumer
+
+   kubectl delete deploy message-consumer
+   kubectl delete service message-consumer
+   kubectl apply -f message-consumer-deployment.yaml
+   kubectl apply -f message-consumer-service.yaml
+
+ ----------build message producer image-----------
+    mvn install -DskipTests
+    docker build -t message-producer .
+    docker rmi miniocean/message-producer
+    docker tag message-producer:latest miniocean/message-producer
+    docker push miniocean/message-producer
+
+  kubectl delete deploy message-publisher
+  kubectl delete service message-publisher
+  kubectl apply -f kube/message-publisher-deployment.yaml
+  kubectl apply -f kube/message-publisher-service.yaml
+
+
+#--------------deploy POSTGRES-------------
+  kubectl delete deploy postgres
+  kubectl delete service postgres
+  kubectl delete pvc postgres-pv-claim-1
+
+  kubectl apply -f postgresql-deployment.yaml
+  kubectl apply -f postgresql-service.yaml
+  kubectl apply -f persistent-volume.yml
+  kubectl apply -f persistent-volume-claim-1.yaml
+
+
+
+#------------minikube service ------------
+    minikube service message-publisher
+
+    minikube service message-consumer
+
+#--------scale up----------------
+    kubectl scale --replicas=3 deployment/postgresql
+
+#--------------logs---------------
+  kubectl logs -f message-publisher-7b6d77d6-spzz7
+
+#----------kubectl commands----------
+    kubectl get pods
+
+#----------ping psql------------
+kubectl get pod postgresql
+kubectl get svc postgres
+kubectl exec -it postgres-598675dbf9-4r6ll  -- psql -U postgres
+
+psql -h localhost -U postgres --password -p 31070 postgres
+
+psql --host=postgresql --dbname=postgres --username=postgres
+
+
+----- In case the deletion of persistent volume is blocked ----------
+    kubectl patch pvc pvc_name -p '{"metadata":{"finalizers":null}}'
+    kubectl patch pv pv_name -p '{"metadata":{"finalizers":null}}'
+    kubectl patch pod pod_name -p '{"metadata":{"finalizers":null}}'
+
+
+
+
+To better scale the services and pods, I have decoupled the application to four different components so that they can be scaled indepdendently.
+We could have hundreds of publishers running and a single instance of the message producer.
+each running in a different pod on the cluster nodes independent of one another.
+Each pod runs an instance of the application container message-publisher, message-consumer, postgres and rabbitmq.
+In need of large traffic, we can scale up the pods to have more instances of each application running.
+We can increase the number of nodes in the cluster or increase the number of pods in deployment to dynamically adjusting to the load.
+In case of node failure, identical pods will be scheduled on other nodes in the cluster.
+
+In case of large incoming request to queue the messages, we can scale the number of replicas to 8 for the message publisher and rabbitmq.
+
+Across pods, there is shared volumes that are accessible by other pods.
+
+Workflow of pushing message to queue and saving to database.
+1. User post a message to endpoint /publish/message on the publisher pod host.
+2. Kubernetes cluster will schedule the available nodes to run pods. Traffic is distributed among the pods.
+2. Message publisher pod will push the messages to a queue hosted by the rabbitmq pods.
+4. Message consumer pod will listen and poll from the queue, and save the data to the database running on postgres pod.
+
+
+
+
+
+
+
