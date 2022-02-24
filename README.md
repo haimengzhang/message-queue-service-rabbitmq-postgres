@@ -17,7 +17,7 @@ minikube start \
   ```
 Increase docker desktop RAM limit if you get resource limited error.
 
-Then, connect to the Docker client to minikube:
+Then, connect the Docker client to minikube:
 ```
   minikube docker-env
 ```
