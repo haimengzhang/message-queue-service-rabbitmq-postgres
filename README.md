@@ -60,7 +60,7 @@ docker-comose down
 ```
 
 ## Moving the project to Kubernetes
-Use kompose to translate the docker-compose.yaml to kubernetes deployment and service yaml files. Deployment yamls define how to create the pods to host the container instance. Servce yaml files will be used to expose the deployed object with an external IP, which is used by kubernetes to load balance across the pods. 
+Use kompose to translate the docker-compose.yaml to kubernetes deployment and service yaml files. Deployment yamls define how to create the pods to host the container instance. Service yaml files will be used to expose the deployed object with an external IP, which is used by kubernetes to load balance across the pods. 
 First, We should configure the database pod to use a persistent volume for storage in the cluster.
 PV is backed by physical storage and will retain the data across pods even after the pods are restarted.
 
@@ -164,8 +164,8 @@ We can also increase the number of nodes in the cluster where the scheduled pods
 In case of large incoming traffic to queue the messages, we can scale the number of replicas to 8 for the message publisher and rabbitmq.
 
 ```
-kubectl scale --replicas=20 deployment/message-publisher
-kubectl scale --replicas=20 deployment/rabbitmq
+kubectl scale --replicas=8 deployment/message-publisher
+kubectl scale --replicas=8 deployment/rabbitmq
 ```
 ### Horizontal pod autoscaler
 Another way is to use horizontal pod autoscaling, we can run:
