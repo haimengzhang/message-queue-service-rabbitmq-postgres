@@ -27,7 +27,7 @@ docker pull rabbitmq:3-management
 docker pull postgres
 ```
 
-Next, build the local service images and push them to docker hub.
+Next, we will build the local service images and push them to docker hub. Since I already have pushed the application images to the docker hub, you can skip this step. The commands shown here are just for your information.
 In the service directory spring-boot-message-consumer, run:
 
 ```
@@ -56,7 +56,7 @@ We could test our endpoint by going to `localhost:8090/message/publish` to publi
 
 To stop and remove the containers:
 ```
-docker-comose down
+docker-compose down
 ```
 
 ## Moving the project to Kubernetes
