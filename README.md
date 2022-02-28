@@ -45,14 +45,14 @@ In the service directory spring-boot-message-producer, run:
     docker tag message-producer:latest miniocean/message-producer
     docker push miniocean/message-producer
 ```
-## Run the service cointainers in docker:
+## Run the application in docker containers:
 Now that we have our images ready, use docker-compose to launch the multiple containers at once in detach mode:
 
 ```
 docker-compose up -d
 ```
 Now, our services are running in containers.
-We could test our endpoint by going to `localhost:8090/message/publish` to publish message and `localhost:8091/message/` to fetch the images saved to db.
+We could access and test our endpoint by going to `localhost:8090/message/publish` to publish message and `localhost:8091/message/` to fetch the images saved to db.
 
 To stop and remove the containers:
 ```
@@ -60,7 +60,7 @@ docker-compose down
 ```
 
 ## Moving the project to Kubernetes
-Use kompose to translate the docker-compose.yaml to kubernetes deployment and service yaml files. Deployment yamls define how to create the pods to host the container instance. Service yaml files will be used to expose the deployed object with an external IP, which is used by kubernetes to load balance across the pods. 
+Use Kompose, a conversion tool for Docker Compose to translate the docker-compose.yaml to Kubernetes deployment and service yaml files. Deployment yamls define how to create the pods to host the container instance. Service yaml files will be used to expose the deployed object with an external IP, which is used by kubernetes to load balance across the pods. 
 First, We should configure the database pod to use a persistent volume for storage in the cluster.
 PV is backed by physical storage and will retain the data across pods even after the pods are restarted.
 
@@ -112,7 +112,7 @@ minikube service message-publisher
 minikube service message-consumer
 ```
 Copy and paste the load balancer URL like shown below to Postman.
-In our case, it is http://127.0.0.1:54682/message/publish.
+In this example, it is http://127.0.0.1:54682/message/publish.
 This is the address we will use for our POST request.
 
 ![message-publisher](./message-publisher-url.png)
