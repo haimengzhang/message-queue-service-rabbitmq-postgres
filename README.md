@@ -1,4 +1,4 @@
-## Message queue service running on kubernetes
+## Message queue service with RabbitMQ and PostgreSQL running on Kubernetes
 
 
 ### Setup
